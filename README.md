@@ -2,6 +2,8 @@
 
 A Rust project for implementing, testing, and benchmarking sorting algorithms. Measure comparisons, swaps, and execution time across different data distributions.
 
+[Read Programming Pearls on Sorting!](https://dl.acm.org/doi/pdf/10.1145/358027.381121)
+
 ## Quick Start
 
 ```bash
@@ -108,8 +110,41 @@ Sample size: 10000
 - Shell Sort
 - Tim Sort
 
-## Notes
+## Release V cargo run
 
-- Always use `--release` for accurate timing
-- Larger sample sizes (1000, 10000) show clearer algorithmic differences
-- Compare metrics across data types to understand algorithm behavior
+1. The "Performance Gap" (Optimization)
+
+
+The speedup is massive between using the `benchmark.sh` script (which uses the `--release` flag) and using the unoptimized Cargo run (which is actually debug mode!). Let’s look at the 10,000 random elements  (Quicksort) case:
+
+
+| Debug |  4,788.968 µs | ~4.78 ms |
+| Release | 442.453 µs | ~0.44 ms |
+
+Result: The release version is 10x faster.
+
+For the 10,000 reverse sorted elements (i.e. Quicksort kryptonite!) case:
+
+| Debug | 395.02 ms |
+
+| Release | 23.12 ms |
+
+Result: `--release` is 17x faster.
+
+In Rust, `cargo run --release` enables LLVM optimizations, inlines functions, and removes many runtime checks (like integer overflow checks in some contexts), which explains it runs 10x faster.
+
+2. Algorithmic Behavior (Quicksort Fixed Pivot)
+
+- Algorithmic Behavior: The number of comparisons for Reverse data is exactly \(\frac{n(n-1)}{2}\). For \(n=10,000\), that is \(49,995,000\). This confirms your Quicksort is degrading from \(O(n \log n)\) to \(O(n^2)\) on sorted/reverse data.
+
+- Duplicate Data: Your implementation also struggles with duplicates (likely due to how it handles elements equal to the pivot), taking 2.4 ms compared to the 0.4 ms for random data at the 10,000 scale.
+
+3. Comparison Count Consistency
+
+
+Notice that the compares and swaps stay almost identical between the two runs (e.g., exactly 49,995,000 compares for Reverse/10,000 in both runs).
+
+
+- This is good! It means your logic is deterministic.
+
+- The slight variations in "Random" compares (148,643 vs 152,573) are simply because the random seed changed between executions.
