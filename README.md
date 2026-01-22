@@ -110,23 +110,27 @@ Sample size: 10000
 - Shell Sort
 - Tim Sort
 
-## Release V cargo run
+## Compiling with Optimizations
 
-1. The "Performance Gap" (Optimization)
+Use `benchmark.sh` to run with compilter optimizations.
 
+The `benchmark.sh` script uses the `--release` flag and is much faster than simply using and using the unoptimized Cargo run (which is actually debug mode!). 
 
-The speedup is massive between using the `benchmark.sh` script (which uses the `--release` flag) and using the unoptimized Cargo run (which is actually debug mode!). Let’s look at the 10,000 random elements  (Quicksort) case:
+For Let’s look at the 10,000 random elements with Quicksort:
 
-
+| Mode | Time µs | Time ms |
+| ------| ------- | ------- |
 | Debug |  4,788.968 µs | ~4.78 ms |
 | Release | 442.453 µs | ~0.44 ms |
 
-Result: The release version is 10x faster.
+Result: The optimized release version is 10x faster.
 
 For the 10,000 reverse sorted elements (i.e. Quicksort kryptonite!) case:
 
-| Debug | 395.02 ms |
 
+| Mode |  Time ms |
+| ------| ------- |
+| Debug | 395.02 ms |
 | Release | 23.12 ms |
 
 Result: `--release` is 17x faster.
