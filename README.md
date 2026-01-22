@@ -2,7 +2,11 @@
 
 A Rust project for implementing, testing, and benchmarking sorting algorithms. Measure comparisons, swaps, and execution time across different data distributions.
 
+Inspired by reading through Programming Pearls on sorting and wanting to implement, and benchmark, the different sorts in Rust.
+
 [Read Programming Pearls on Sorting!](https://dl.acm.org/doi/pdf/10.1145/358027.381121)
+
+Programming Pearls on Sorting was cited in one of my favorite blog posts about bugs, testing, and philosophy of writing code by Joshua Bloch. [Extra, Extra - Read All About It: Nearly All Binary Searches and Mergesorts are Broken](https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/ "Nearly All Binary Searches and Mergesorts are Broken")
 
 ## Quick Start
 
@@ -49,28 +53,6 @@ run_benchmark("MySort", &random_data, my_sort);
 4. Run:
 ```bash
 cargo run --release
-```
-
-## Example: Insertion Sort
-
-```rust
-fn insertion_sort(arr: &mut [i32]) -> SortMetrics {
-    let mut metrics = SortMetrics::new();
-    for i in 1..arr.len() {
-        let mut j = i;
-        while j > 0 {
-            metrics.compares += 1;
-            if arr[j - 1] > arr[j] {
-                arr.swap(j - 1, j);
-                metrics.swaps += 1;
-            } else {
-                break;
-            }
-            j -= 1;
-        }
-    }
-    metrics
-}
 ```
 
 ## Metrics Explained
@@ -137,18 +119,4 @@ Result: `--release` is 17x faster.
 
 In Rust, `cargo run --release` enables LLVM optimizations, inlines functions, and removes many runtime checks (like integer overflow checks in some contexts), which explains it runs 10x faster.
 
-2. Algorithmic Behavior (Quicksort Fixed Pivot)
-
-- Algorithmic Behavior: The number of comparisons for Reverse data is exactly \(\frac{n(n-1)}{2}\). For \(n=10,000\), that is \(49,995,000\). This confirms your Quicksort is degrading from \(O(n \log n)\) to \(O(n^2)\) on sorted/reverse data.
-
-- Duplicate Data: Your implementation also struggles with duplicates (likely due to how it handles elements equal to the pivot), taking 2.4 ms compared to the 0.4 ms for random data at the 10,000 scale.
-
-3. Comparison Count Consistency
-
-
-Notice that the compares and swaps stay almost identical between the two runs (e.g., exactly 49,995,000 compares for Reverse/10,000 in both runs).
-
-
-- This is good! It means your logic is deterministic.
-
-- The slight variations in "Random" compares (148,643 vs 152,573) are simply because the random seed changed between executions.
+Benchmarking reveals interesting behavior, like insertion sort being faster on arrays of length 100, and quicksort being basically n^(2) (quadratic) on reverse sorted lists.
