@@ -5,6 +5,7 @@ mod insert;
 mod quick;
 
 use insert::sort as insertion_sort;
+use insert::sort_with_swap as insertion_sort_with_swap;
 use quick::sort as quick_sort;
 
 const SAMPLE_SIZES: &[usize] = &[100, 1000, 10000];
@@ -120,31 +121,67 @@ fn main() {
         let reverse_sorted = generate_reverse_sorted_data(size);
         let duplicates = generate_many_duplicates_data(size);
 
-        run_benchmark("Quicksort             ", &random_data, quick_sort);
-        run_benchmark("Quicksort (reverse)   ", &reverse_sorted, quick_sort);
-        run_benchmark("Quicksort (duplicates)", &duplicates, quick_sort);
+        // run_benchmark("Quicksort             ", &random_data, quick_sort);
+        // run_benchmark("Quicksort (reverse)   ", &reverse_sorted, quick_sort);
+        // run_benchmark("Quicksort (duplicates)", &duplicates, quick_sort);
+
+        compare_benchmarks(
+            "Nearly Sorted",
+            &nearly_sorted,
+            "Insertion Sort With Swap",
+            insertion_sort_with_swap,
+            "Insertion Sort",
+            insertion_sort,
+        );
+
+        compare_benchmarks(
+            "Duplicate Data",
+            &duplicates,
+            "Insertion Sort With Swap",
+            insertion_sort_with_swap,
+            "Insertion Sort",
+            insertion_sort,
+        );
+
+        compare_benchmarks(
+            "Reverse",
+            &reverse_sorted,
+            "Insertion Sort With Swap",
+            insertion_sort_with_swap,
+            "Insertion Sort",
+            insertion_sort,
+        );
+
+        compare_benchmarks(
+            "Duplicates",
+            &duplicates,
+            "Insertion Sort With Swap",
+            insertion_sort_with_swap,
+            "Insertion Sort",
+            insertion_sort,
+        );
 
         println!("");
         println!("{}", "-".repeat(80));
         println!("");
 
-        compare_benchmarks(
-            "Nearly Sorted Comparison",
-            &nearly_sorted,
-            "Quicksort",
-            quick_sort,
-            "Insertion Sort",
-            insertion_sort,
-        );
+        // compare_benchmarks(
+        //     "Nearly Sorted Comparison",
+        //     &nearly_sorted,
+        //     "Quicksort",
+        //     quick_sort,
+        //     "Insertion Sort",
+        //     insertion_sort,
+        // );
 
-        compare_benchmarks(
-            "Duplicate Data Comparison",
-            &duplicates,
-            "Quicksort",
-            quick_sort,
-            "Insertion Sort",
-            insertion_sort,
-        );
+        // compare_benchmarks(
+        //     "Duplicate Data Comparison",
+        //     &duplicates,
+        //     "Quicksort",
+        //     quick_sort,
+        //     "Insertion Sort",
+        //     insertion_sort,
+        // );
 
         println!();
 
