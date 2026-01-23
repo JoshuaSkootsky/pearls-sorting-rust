@@ -45,3 +45,14 @@ pub fn sort(arr: &mut [i32]) -> SortMetrics {
 
 // in programming pearls, Bently writes that by doing the shift and not the arr.swap method, his version will run 30% faster.
 // My rust benchmarks on a reverse sorted list show 26 ms versus 22 ms, which is indeed 18% slower.
+
+// elegant sort
+fn insertion_sort_e<T: Ord>(a: &mut [T]) {
+    for i in 1..a.len() {
+        let mut j = i;
+        while j > 0 && a[j] < a[j - 1] {
+            a.swap(j, j - 1);
+            j -= 1;
+        }
+    }
+}

@@ -39,3 +39,24 @@ fn partition<T: PartialOrd>(arr: &mut [T], metrics: &mut SortMetrics) -> usize {
     }
     store_idx
 }
+
+// elegant version?
+fn quicksort_e<T: Ord>(a: &mut [T]) {
+    if a.len() < 2 { return; }
+    let p = partition_e(a);
+    let (l, r) = a.split_at_mut(p);
+    quicksort_e(l);
+    quicksort_e(&mut r[1..]);
+}
+
+fn partition_e<T: Ord>(a: &mut [T]) -> usize {
+    let (p, mut i) = (a.len() - 1, 0);
+    for j in 0..p {
+        if a[j] < a[p] {
+            a.swap(i, j);
+            i += 1;
+        }
+    }
+    a.swap(i, p);
+    i
+}

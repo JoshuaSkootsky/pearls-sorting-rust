@@ -8,6 +8,101 @@ Inspired by reading through Programming Pearls on sorting and wanting to impleme
 
 Programming Pearls on Sorting was cited in one of my favorite blog posts about bugs, testing, and philosophy of writing code by Joshua Bloch. [Extra, Extra - Read All About It: Nearly All Binary Searches and Mergesorts are Broken](https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/ "Nearly All Binary Searches and Mergesorts are Broken")
 
+In the spirit of Programming Pearls, here are some short, elegant versions of these sorts without benchmarking statistics added:
+
+## Heap Sort (13 lines)
+
+
+A lucid implementation that clearly separates heap construction from extraction. A tribute to W.D. Maurer's 19-line FORTRAN implementation of Heap Sort.
+
+```rust
+	fn heap_sort<T: Ord>(a: &mut [T]) {
+	    let n = a.len();
+	    for i in (0..n/2).rev() {
+	        sift_down(a, i, n);
+	    }
+	    for i in (1..n).rev() {
+	        a.swap(0, i);
+	        sift_down(a, 0, i);
+	    }
+	}
+	
+	fn sift_down<T: Ord>(a: &mut [T], mut r: usize, e: usize) {
+	    loop {
+	        let c = r * 2 + 1;
+	        if c >= e { break; }
+	        let c = if c + 1 < e && a[c] < a[c + 1] { c + 1 } else { c };
+	        if a[r] < a[c] { a.swap(r, c); r = c; } else { break; }
+	    }
+	}
+```
+
+## String Sort (8 lines)
+
+A Rust tribute to McIlroy's 12-line constant time radix sort using bucket sort on each character position:
+
+```rust
+	fn string_sort(strings: &mut [&str]) {
+	    let max = strings.iter().map(|s| s.len()).max().unwrap_or(0);
+	    for i in (0..max).rev() {
+	        let mut b = vec![Vec::new(); 257];
+	        for s in strings.drain(..) {
+	            b[s.as_bytes().get(i).map(|&c| c as usize + 1).unwrap_or(0)].push(s);
+	        }
+	        for mut v in b { strings.append(&mut v); }
+	    }
+	}
+```
+
+Do not use this .as_bytes on Unicode, it works on ASCII chars!
+
+## Insertion Sort (7 lines)
+
+
+The essence of simplicity; each element finds its proper place.
+
+```rust
+	fn insertion_sort<T: Ord>(a: &mut [T]) {
+	    for i in 1..a.len() {
+	        let mut j = i;
+	        while j > 0 && a[j] < a[j - 1] {
+	            a.swap(j, j - 1);
+	            j -= 1;
+	        }
+	    }
+	}
+```
+
+With that you can start to see why Bently was recommending writing your own insertion sort and ignoring the "System Sort!"
+
+## Quicksort (14 lines)
+
+Elegant recursion with Rust's split_at_mut for safe partitioning:
+
+```rust
+	fn quicksort<T: Ord>(a: &mut [T]) {
+	    if a.len() < 2 { return; }
+	    let p = partition(a);
+	    let (l, r) = a.split_at_mut(p);
+	    quicksort(l);
+	    quicksort(&mut r[1..]);
+	}
+	
+	fn partition<T: Ord>(a: &mut [T]) -> usize {
+	    let (p, mut i) = (a.len() - 1, 0);
+	    for j in 0..p {
+	        if a[j] < a[p] {
+	            a.swap(i, j);
+	            i += 1;
+	        }
+	    }
+	    a.swap(i, p);
+	    i
+	}
+```
+
+This 14 line quicksort is not tail call recursive optimized, and indeed could lead to a Stack Overflow.
+
 ## Quick Start
 
 ```bash
